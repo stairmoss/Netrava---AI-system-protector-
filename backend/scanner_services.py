@@ -509,3 +509,5 @@ def check_darkweb_leaks(search_term: str) -> Dict[str, Any]:
     }
 
 // threat intelligence scan data loaded
+
+// sms regex threat check added
