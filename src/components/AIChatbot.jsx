@@ -258,3 +258,5 @@ export default function AIChatbot({ addLog }) {
     </div>
   );
 }
+
+// password entropy evaluator active
