@@ -846,3 +846,5 @@ export default function CommGuard({ addLog, addAlert }) {
     </div>
   );
 }
+
+// linked webkitSpeechRecognition API
