@@ -19,7 +19,7 @@ const QUICK_CHIPS = [
 export default function AIChatbot({ addLog }) {
   // Chat States
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "🤖 Hello! I am the Netrava AI Assistant. I can help analyze scam messages, explain network ports, guide you through malware cleanup, or check credential breaches. What threat can I help you investigate today?" }
+    { role: 'assistant', content: "Hello! I am the Netrava AI Assistant. I can help analyze scam messages, explain network ports, guide you through malware cleanup, or check credential breaches. What threat can I help you investigate today?" }
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -75,7 +75,7 @@ export default function AIChatbot({ addLog }) {
       setTimeout(() => {
         setMessages(prev => [...prev, { 
           role: 'assistant', 
-          content: "⚠️ **Offline System Mode**\n\nI couldn't reach the backend server to process this query. Please check if your FastAPI server is running on port 8000. In standalone mode, I recommend checking our Comm Guard and Device Guard pages to run local analysis!" 
+          content: "**Offline System Mode**\n\nI couldn't reach the backend server to process this query. Please check if your FastAPI server is running on port 8000. In standalone mode, I recommend checking our Comm Guard and Device Guard pages to run local analysis!" 
         }]);
       }, 800);
     } finally {

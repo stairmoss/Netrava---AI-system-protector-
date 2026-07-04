@@ -126,7 +126,7 @@ export default function DeviceGuard({ addLog, addAlert }) {
           
           // Native pop up asking to eliminate the file
           const quarantine = window.confirm(
-            `🛡️ NETRAVA MALWARE SHIELD\n\nThreat Detected: ${data.threat_info?.name || 'Malicious Payload'}\nFile: ${data.filename}\n\nShould Netrava eliminate/quarantine this file from local storage? (Yes/No)`
+            `[NETRAVA MALWARE SHIELD]\n\nThreat Detected: ${data.threat_info?.name || 'Malicious Payload'}\nFile: ${data.filename}\n\nShould Netrava eliminate/quarantine this file from local storage? (Yes/No)`
           );
           if (quarantine) {
             addLog('MALWARE_SCAN', `Quarantined and eliminated threat: ${data.filename}.`, 'info');

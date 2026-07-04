@@ -257,7 +257,7 @@ export default function CommGuard({ addLog, addAlert }) {
     // Native Desktop Notification pop-up
     if (window.Notification && Notification.permission === 'granted') {
       try {
-        const title = agree ? "🛡️ Netrava Call Guard ACTIVE" : "🔒 Private Call Session";
+        const title = agree ? "Netrava Call Guard ACTIVE" : "Private Call Session";
         const body = agree 
           ? `Now scanning voice data on #${chanName} for OTP/bank spoofing indicators.`
           : `Call scanning is disabled. Your communication on #${chanName} is private.`;
@@ -548,7 +548,7 @@ export default function CommGuard({ addLog, addAlert }) {
                   <Phone size={24} color="var(--primary-neon)" />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>📞 External VoIP Hotline</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>External VoIP Hotline</div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Incoming External Line Trunk</span>
                 </div>
               </div>
@@ -721,7 +721,7 @@ export default function CommGuard({ addLog, addAlert }) {
                         }
                       }}
                     >
-                      <option value="" disabled>📂 Inject Scenario</option>
+                      <option value="" disabled>Inject Scenario</option>
                       {MOCK_SCENARIOS.map((s, idx) => (
                         <option key={idx} value={idx}>{s.label}</option>
                       ))}

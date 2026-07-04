@@ -377,7 +377,7 @@ def analyze_sms_threats(message_text: str) -> Dict[str, Any]:
     risk_score = min(100, risk_score)
     if risk_score >= 70:
         level = "HIGH"
-        rec = "⚠️ INDIAN CYBERCRIME ALERT: Do NOT click links, scan QR codes, transfer money, or install remote apps (AnyDesk). Report instantly to the National Cyber Crime Helpline at 1930 or file a complaint at cybercrime.gov.in."
+        rec = "INDIAN CYBERCRIME ALERT: Do NOT click links, scan QR codes, transfer money, or install remote apps (AnyDesk). Report instantly to the National Cyber Crime Helpline at 1930 or file a complaint at cybercrime.gov.in."
     elif risk_score >= 35:
         level = "MEDIUM"
         rec = "Be cautious. This resembles typical UPI, Electricity, or KYC fraud vectors. Never share OTPs or install screen-sharing apps."

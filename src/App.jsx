@@ -85,7 +85,7 @@ export default function App() {
               
               // Prompt user with OS blocking confirm dialog
               const killIt = window.confirm(
-                `⚠️ NETRAVA SENTINEL ALERT\n\nSuspicious process detected running on host:\n\nCommand: ${proc.name}\nPID: ${proc.pid}\nCPU Usage: ${proc.cpu}%\n\nShould Netrava eliminate this process to secure the system? (Yes/No)`
+                `[NETRAVA SENTINEL ALERT]\n\nSuspicious process detected running on host:\n\nCommand: ${proc.name}\nPID: ${proc.pid}\nCPU Usage: ${proc.cpu}%\n\nShould Netrava eliminate this process to secure the system? (Yes/No)`
               );
               
               if (killIt) {
