@@ -107,9 +107,14 @@ def api_scamcall_analyze(req: CallTranscriptRequest):
     text = req.transcript.lower()
     
     # Live scam call keyword triggers
-    bank_scam_keywords = ["bank manager", "account block", "verify details", "credit card limit", "net banking password"]
-    otp_keywords = ["otp", "one time password", "sent to your mobile", "six digit number", "verification code"]
-    giftcard_keywords = ["gift card", "google play card", "refund department", "anydesk", "teamviewer", "remote access"]
+    bank_scam_keywords = ["bank manager", "account block", "verify details", "credit card limit", "net banking password", "sbi yono", "kyc update"]
+    otp_keywords = ["otp", "one time password", "sent to your mobile", "six digit number", "verification code", "upi pin"]
+    giftcard_keywords = ["gift card", "google play card", "refund department", "anydesk", "teamviewer", "remote access", "install software"]
+    
+    # Indian Cybercrime-specific keywords
+    digital_arrest_keywords = ["crime branch", "mumbai police", "customs department", "cbi", "drugs seized", "mdma", "narcotics", "digital arrest", "aadhaar card", "money laundering"]
+    electricity_keywords = ["electricity board", "power disconnect", "unpaid bill", "power cut", "electricity office", "outstanding bill"]
+    lottery_keywords = ["kbc", "lottery", "lucky draw", "twenty-five lakh", "processing fee", "bank check", "claim prize"]
     
     risk_level = "LOW"
     warning = "No suspicious triggers detected."
@@ -119,11 +124,26 @@ def api_scamcall_analyze(req: CallTranscriptRequest):
     matched_bank = [w for w in bank_scam_keywords if w in text]
     matched_otp = [w for w in otp_keywords if w in text]
     matched_gift = [w for w in giftcard_keywords if w in text]
+    matched_arrest = [w for w in digital_arrest_keywords if w in text]
+    matched_electric = [w for w in electricity_keywords if w in text]
+    matched_lottery = [w for w in lottery_keywords if w in text]
     
     if matched_otp:
         risk_level = "CRITICAL"
         warning = "IMMEDIATE DANGER: Caller is requesting an OTP (One-Time Password) or security PIN."
-        reasons.append("Caller requested OTP/Verification pin. Banks NEVER ask for OTP.")
+        reasons.append("Caller requested OTP/UPI verification PIN. Banks NEVER ask for OTP/PIN.")
+    elif matched_arrest:
+        risk_level = "CRITICAL"
+        warning = "CRITICAL THREAT: Fake Police / Digital Arrest scam in progress."
+        reasons.append("Caller is impersonating Mumbai Crime Branch/Customs/CBI and claiming 'digital arrest' due to drug package seizure. Real police do not conduct arrests or demand verification deposits over VoIP/Skype video calls.")
+    elif matched_electric:
+        risk_level = "HIGH"
+        warning = "HIGH RISK: Utility Impersonation / Power Cutoff scam in progress."
+        reasons.append("Caller threatens immediate electricity cutoff and requests payment via AnyDesk/remote app.")
+    elif matched_lottery:
+        risk_level = "HIGH"
+        warning = "HIGH RISK: Fake KBC / Lucky Draw Lottery Scam."
+        reasons.append("Caller claims you won KBC lottery funds and demands upfront processing tax.")
     elif matched_bank:
         risk_level = "HIGH"
         warning = "HIGH RISK: Caller is claiming to be from your bank/credit card company requesting security details."
@@ -138,7 +158,7 @@ def api_scamcall_analyze(req: CallTranscriptRequest):
         "risk_level": risk_level,
         "warning": warning,
         "reasons": reasons,
-        "recommendation": "HANG UP IMMEDIATELY. Do not speak further or share any credentials." if risk_level in ["HIGH", "CRITICAL"] else "Call seems typical, but remain cautious about sharing personal keys."
+        "recommendation": "⚠️ SCAM ALERT: HANG UP IMMEDIATELY. Real government departments or police will never demand money or place you under digital arrest over Skype. Report this incident to the National Cyber Crime Helpline (1930) or visit cybercrime.gov.in." if risk_level in ["HIGH", "CRITICAL"] else "Call seems typical, but remain cautious about sharing personal keys."
     }
 
 @app.post("/api/assistant/chat")
@@ -146,24 +166,52 @@ def api_chat(req: ChatRequest):
     msg = req.message.lower().strip()
     
     # Rich rule-based responses matching chatbot personality "Netrava AI Security Guardian"
-    if "courier" in msg or "delivery" in msg or "fedex" in msg or "dhl" in msg:
+    if "arrest" in msg or "police" in msg or "cbi" in msg or "customs" in msg or "narcotics" in msg:
         reply = (
-            "⚠️ **Courier Delivery Scam Warning**\n\n"
-            "This is a common scam where fraudster send SMS/messages claiming a parcel requires custom fee or address update. "
-            "They will request you to click a link (like `dhl-correction-portal.xyz`) to pay a nominal fee (e.g. ₹50) and steal your credit card details.\n\n"
-            "**What to do:**\n"
-            "1. Do **not** click the link.\n"
-            "2. Track your package only via the official site using your tracking ID.\n"
-            "3. Block the sender number immediately."
+            "🚨 **Digital Arrest & Police Impersonation Scam**\n\n"
+            "This is a major cyber fraud vector across India where scammers pretend to be CBI, Mumbai Police, or Customs officers over Skype or WhatsApp calls.\n\n"
+            "**Key Safety Truths:**\n"
+            "1. **No Digital Arrest:** Real police or government authorities *never* place you under 'digital arrest' or monitor you on video calls.\n"
+            "2. **No Security Verification Deposit:** Government bodies will never demand you transfer money to 'verify' your accounts or avoid jail.\n"
+            "3. **No Skype/WhatsApp Investigations:** Real authorities issue official legal summons; they do not conduct interrogations over Skype.\n\n"
+            "**What to do:** Hang up immediately, block the caller, and file an instant report with the National Cyber Crime Helpline at **1930** or visit **cybercrime.gov.in**."
         )
-    elif "bank" in msg or "otp" in msg or "pan card" in msg or "kyc" in msg:
+    elif "electricity" in msg or "power" in msg or "cutoff" in msg or "bill" in msg:
         reply = (
-            "🏦 **Banking Fraud Alert**\n\n"
-            "Scammers impersonate bank customer care or send messages warning that your 'YONO/NetBanking account is blocked' due to missing PAN/KYC details.\n\n"
-            "**Critical Safety Rules:**\n"
-            "• **Banks never ask for OTPs**, CVV, PINs, or net banking passwords over calls or SMS.\n"
-            "• Never click links that claim to update KYC details.\n"
-            "• If in doubt, visit your physical bank branch or call the number on the back of your debit card."
+            "⚡ **Electricity Bill Cut-off Scam**\n\n"
+            "Scammers send messages warning that your power connection will be cut at 9:30 PM due to an unpaid bill and direct you to contact an 'electricity officer.'\n\n"
+            "**Critical Advice:**\n"
+            "• State electricity boards (e.g. BSES, CESC, MSEB) *never* send emergency disconnection notices via personal mobile numbers or WhatsApp.\n"
+            "• They will never ask you to install screen sharing tools like AnyDesk to check your bill status.\n"
+            "• Only verify and pay bills through official state power utility portals or trusted apps (GooglePay, PhonePe, Paytm) directly."
+        )
+    elif "job" in msg or "telegram" in msg or "part-time" in msg or "maps" in msg:
+        reply = (
+            "💼 **Telegram Part-Time / Review Task Scam**\n\n"
+            "Fraudsters lure victims with promises of earning ₹3,000–₹8,000 daily just by rating hotels, liking YouTube videos, or reviewing maps.\n\n"
+            "**How it works:**\n"
+            "1. They pay you a small initial sum (e.g. ₹150) to build trust.\n"
+            "2. They add you to a Telegram group and demand 'prepaid investments' or 'vip tasks' to unlock higher payouts.\n"
+            "3. Once you transfer the money, they freeze your account and disappear.\n\n"
+            "**Rule:** Never send money to receive a salary. Block any Telegram contact offering map-rating tasks."
+        )
+    elif "upi" in msg or "qr" in msg or "gpay" in msg or "refund" in msg:
+        reply = (
+            "💳 **UPI QR Code & Cashback Refund Scam**\n\n"
+            "Scammers send links or QR codes claiming you received a lottery reward or cashback refund (e.g., from PhonePe or GooglePay).\n\n"
+            "**Golden Rule of UPI:**\n"
+            "• **UPI PIN is only needed to SEND money, never to RECEIVE money.**\n"
+            "• If someone asks you to scan a QR code or enter your UPI PIN to claim a refund, they are stealing your money.\n"
+            "• Immediately report fraudulent transactions to your bank's cyber cell or dial **1930**."
+        )
+    elif "courier" in msg or "delivery" in msg or "fedex" in msg or "dhl" in msg:
+        reply = (
+            "📦 **Courier Delivery / Seizure Scam Warning**\n\n"
+            "Fraudsters send messages claiming a package in your name was seized due to contraband (MDMA/drugs) or requires custom duty correction.\n\n"
+            "**What to do:**\n"
+            "1. Do **not** click suspicious correction links.\n"
+            "2. Track your package only via the official site using your tracking ID.\n"
+            "3. Block the sender number immediately. Never share your Aadhaar number."
         )
     elif "virus" in msg or "malware" in msg or "infected" in msg or "ransomware" in msg:
         reply = (
@@ -181,14 +229,14 @@ def api_chat(req: ChatRequest):
         )
     else:
         reply = (
-            "🤖 **Welcome to Netrava AI Support**\n\n"
-            "I can assist you with:\n"
-            "• Scanning message threats (SMS/WhatsApp)\n"
-            "• Analyzing email headers for phishing\n"
-            "• Diagnosing malware features in files\n"
-            "• Real-time scam call transcribing\n"
-            "• Network auditing guidelines\n\n"
-            "Tell me about the specific message, link, or alert you received, and I'll analyze the risk score!"
+            "🤖 **Welcome to Netrava Indian Cybercrime Support**\n\n"
+            "I am specialized in identifying and preventing Indian cybercrime scams. I can help you analyze:\n"
+            "• **Digital Arrest & Customs Threats** (impersonating CBI, Mumbai Crime Branch)\n"
+            "• **Electricity Bill Cutoff messages**\n"
+            "• **Telegram Part-time / Review job fraud**\n"
+            "• **UPI QR Code & Cashback scams**\n"
+            "• **SMS / Email Phishing**\n\n"
+            "If you have fallen victim to any fraud, hang up and dial **1930** immediately to stop bank transactions."
         )
         
     return {

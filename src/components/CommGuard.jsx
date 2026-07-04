@@ -25,42 +25,56 @@ import {
 
 const SMS_TEMPLATES = [
   {
-    title: "Fake KYC Suspension",
+    title: "State Electricity Bill Cut-off",
+    text: "Dear Consumer, Your electricity connection will be disconnected tonight at 9:30 PM from power office because your previous month bill was not updated. Contact electricity officer immediately on +919876543210."
+  },
+  {
+    title: "Mumbai Customs Drug Seizure",
+    text: "FedEx Alert: Your parcel containing illegal narcotics (MDMA) and fake passports has been seized by Customs. Case ID: MH-8492. Click to verify your Aadhaar status: http://mumbai-customs-verification.cc"
+  },
+  {
+    title: "Telegram Part-time Job Review",
+    text: "Earn Rs. 3000 to Rs. 8000 daily by rating Google Maps locations and hotels from home. No experience needed. Contact our recruitment manager on Telegram @EarnDailyIndia to claim your Rs. 200 signup bonus!"
+  },
+  {
+    title: "UPI QR Code Refund Scam",
+    text: "GooglePay Alert: You have received a cashback refund of Rs 1,999. Scan the QR code in the link and enter your UPI PIN to claim this reward directly to your bank account: http://gpay-rewards-online.xyz/claim"
+  },
+  {
+    title: "SBI YONO KYC Suspended",
     text: "Dear SBI User, Your YONO NetBanking account will be blocked today. Please click http://sbi-kyc-verify.net to update your PAN Card immediately."
-  },
-  {
-    title: "Fake Courier Unpaid Customs",
-    text: "DHL Delivery Alert: Your package is held at the sorting office due to unpaid custom fee of Rs.48. Update address and pay now at: http://dhl-correction-portal.xyz"
-  },
-  {
-    title: "Lottery Reward",
-    text: "CONGRATULATIONS! Your mobile number has won Rs. 25,000,000 in KBC Lottery. To claim your prize cash reward, call our department manager on +919988776655."
-  },
-  {
-    title: "Normal OTP notification",
-    text: "Your one-time password (OTP) for transaction of Rs 1,200 at Amazon India is 849204. Do not share this with anyone. Valid for 10 minutes."
   }
 ];
 
 const MOCK_SCENARIOS = [
   {
-    label: "Bank Account Spoofing Call",
+    label: "Mumbai Police Digital Arrest Call",
     transcript: [
-      "Hello, I am the senior manager from the credit card security department.",
-      "We detected an unauthorized transaction of forty-five thousand rupees on your card.",
-      "To cancel this transaction, we need to verify your identity.",
-      "I have sent a six digit security confirmation code to your mobile phone number.",
-      "Please read that OTP to me so I can cancel the transaction."
+      "This is inspector Patil from the Mumbai Crime Branch.",
+      "A parcel containing five passports and two hundred grams of MDMA drugs has been seized at Mumbai airport under your Aadhaar card.",
+      "You are a suspect in money laundering and drug trafficking. We are putting you under digital arrest.",
+      "You must stay on this video call, do not tell anyone, and keep your camera active.",
+      "To verify your innocence, you must transfer all your bank savings to our reserve verification account."
     ]
   },
   {
-    label: "Fake Courier Support Call",
+    label: "State Electricity Officer Call",
     transcript: [
-      "Hello, this is DHL express courier support.",
-      "We have a parcel containing illegal passports under your Aadhaar number.",
-      "This package is seized by the custom police department.",
-      "You must connect to the cyber police team immediately via our video link.",
-      "Please download AnyDesk remote software from the app store for security verification."
+      "Hello, I am speaking from the electricity board customer help department.",
+      "Our records show your last month bill of seven thousand eight hundred rupees is unpaid.",
+      "I am generating a power disconnect order for nine thirty PM tonight.",
+      "To stop this, install AnyDesk on your mobile phone so I can verify your transaction online.",
+      "Open your banking app and pay a token fee of ten rupees so we can update the server."
+    ]
+  },
+  {
+    label: "KBC Lottery WhatsApp Draw Call",
+    transcript: [
+      "Namaskar, congratulations! This call is from Kaun Banega Crorepati department.",
+      "Your mobile number has won a lottery cash prize of twenty-five Lakh rupees in our WhatsApp lucky draw.",
+      "We have registered your bank check number but you must clear the state tax first.",
+      "You need to pay twelve thousand five hundred rupees as processing fee via UPI to our manager.",
+      "Once you send the screenshot of the UPI transfer, your cash prize will be credited in ten minutes."
     ]
   },
   {

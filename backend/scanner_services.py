@@ -320,26 +320,44 @@ def analyze_sms_threats(message_text: str) -> Dict[str, Any]:
     reasons = []
     
     # Phishing categories & keywords
-    # A. Banking/KYC
-    kyc_match = re.search(r'\b(kyc|pan|aadhaar|verify|suspend|block|sbi|hdfc|icici|yono)\b', text)
-    urgency_match = re.search(r'\b(immediately|urgent|today|within 24 hours|expire|lock|unauthorized)\b', text)
+    # A. Banking/KYC (Indian Bank focus: SBI, HDFC, YONO)
+    kyc_match = re.search(r'\b(kyc|pan|aadhaar|verify|suspend|block|sbi|hdfc|icici|yono|pnb|bob)\b', text)
+    urgency_match = re.search(r'\b(immediately|urgent|today|within 24 hours|expire|lock|unauthorized|blocked)\b', text)
     if kyc_match and urgency_match:
-        reasons.append("KYC/Account suspension threat detected with high urgency")
+        reasons.append("Indian banking KYC/Account suspension threat detected")
+        risk_score += 45
+        
+    # B. Lottery/Rewards/UPI Fraud (KBC focus)
+    lottery_match = re.search(r'\b(won|lottery|prize|crore|lakh|cashback|rewards|scratch card|gift card|claim|kbc|lucky draw)\b', text)
+    if lottery_match:
+        reasons.append("Lottery/KBC prize lure or fake rewards scam flagged")
         risk_score += 40
         
-    # B. Lottery/Rewards/UPI Fraud
-    lottery_match = re.search(r'\b(won|lottery|prize|crore|lakh|cashback|rewards|scratch card|gift card|claim)\b', text)
-    if lottery_match:
-        reasons.append("Lottery, jackpot, or financial windfall lure identified")
-        risk_score += 35
+    # C. Courier/Customs/Digital Arrest
+    courier_match = re.search(r'\b(courier|post office|delivery|package|dhl|fedex|unpaid custom|address correction|customs|seized|narcotics|mdma|drugs|police|arrest)\b', text)
+    if courier_match:
+        reasons.append("FedEx customs seizure or Digital Arrest threat indicators found")
+        risk_score += 50
         
-    # C. Courier/Delivery Scams
-    courier_match = re.search(r'\b(courier|post office|delivery|package|dhl|fedex|unpaid custom|address correction)\b', text)
-    if courier_match and ("link" in text or "http" in text or "update" in text):
-        reasons.append("Package delivery redirection scam indicators found")
-        risk_score += 30
-        
-    # D. Link presence
+    # D. Electricity Bill Disconnection
+    electricity_match = re.search(r'\b(electricity|power|disconnected|bses|cesc|tneb|mseb|dhbvn|uppcl|bill outstanding|power office)\b', text)
+    if electricity_match:
+        reasons.append("Electricity power disconnection utility scam identified")
+        risk_score += 45
+
+    # E. Telegram Part-time Job review
+    job_match = re.search(r'\b(part-time|part time|salary|telegram|hotel rating|youtube like|job offer|daily income|maps review|earn money)\b', text)
+    if job_match:
+        reasons.append("Telegram rating task or fake part-time job scam detected")
+        risk_score += 40
+
+    # F. UPI QR code scam
+    upi_qr_match = re.search(r'\b(scan qr|upi pin|refund check|cashback refund|claim cashback)\b', text)
+    if upi_qr_match:
+        reasons.append("UPI QR code authorization or cashback pin prompt detected")
+        risk_score += 45
+
+    # G. Link presence
     url_found = re.findall(r'(https?://\S+|www\.\S+)', text)
     if url_found:
         reasons.append("Message contains a hyperlink redirecting to external page")
@@ -350,7 +368,7 @@ def analyze_sms_threats(message_text: str) -> Dict[str, Any]:
             reasons.append(f"Highly suspicious domain detected: {url_scan['domain']}")
             risk_score += 30
             
-    # E. OTP Fraud warning
+    # H. OTP Fraud warning
     if "otp" in text or "one time password" in text or "pin" in text:
         if any(w in text for w in ["share", "send", "call", "forward"]):
             reasons.append("Solicitation of sensitive security token (OTP/PIN)")
@@ -359,10 +377,10 @@ def analyze_sms_threats(message_text: str) -> Dict[str, Any]:
     risk_score = min(100, risk_score)
     if risk_score >= 70:
         level = "HIGH"
-        rec = "Delete the message immediately. Do not tap any links, call any numbers, or reply."
+        rec = "⚠️ INDIAN CYBERCRIME ALERT: Do NOT click links, scan QR codes, transfer money, or install remote apps (AnyDesk). Report instantly to the National Cyber Crime Helpline at 1930 or file a complaint at cybercrime.gov.in."
     elif risk_score >= 35:
         level = "MEDIUM"
-        rec = "Do not share OTPs, personal credentials, or money. Confirm details via the official website."
+        rec = "Be cautious. This resembles typical UPI, Electricity, or KYC fraud vectors. Never share OTPs or install screen-sharing apps."
     else:
         level = "LOW"
         risk_score = max(5, risk_score)
