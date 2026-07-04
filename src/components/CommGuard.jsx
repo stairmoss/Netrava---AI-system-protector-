@@ -850,3 +850,5 @@ export default function CommGuard({ addLog, addAlert }) {
 // linked webkitSpeechRecognition API
 
 // consent authorization check added
+
+// desktop push notifications implemented
