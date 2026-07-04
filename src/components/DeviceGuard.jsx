@@ -411,5 +411,3 @@ export default function DeviceGuard({ addLog, addAlert }) {
     </div>
   );
 }
-
-// process kill buttons hooked

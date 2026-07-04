@@ -507,11 +507,3 @@ def check_darkweb_leaks(search_term: str) -> Dict[str, Any]:
         "leaks": leaks,
         "recommendation": "Change your credentials immediately on breached sites and enable Multi-Factor Authentication (MFA)." if leaks else "No leaks found in indexing databases. Keep updating passwords regularly."
     }
-
-// threat intelligence scan data loaded
-
-// sms regex threat check added
-
-// email scan features added
-
-// malware checks linked
