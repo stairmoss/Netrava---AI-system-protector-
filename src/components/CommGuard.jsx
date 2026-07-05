@@ -101,21 +101,21 @@ const EMAIL_TEMPLATES = [
 ];
 
 export default function CommGuard({ addLog, addAlert }) {
-  // SMS States
+  
   const [smsInput, setSmsInput] = useState("");
   const [smsResult, setSmsResult] = useState(null);
   const [smsLoading, setSmsLoading] = useState(false);
 
-  // Email States
+  
   const [emailFrom, setEmailFrom] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [emailResult, setEmailResult] = useState(null);
   const [emailLoading, setEmailLoading] = useState(false);
 
-  // Huddle Call States
+  
   const [selectedChannel, setSelectedChannel] = useState(null);
-  const [callStatus, setCallStatus] = useState("IDLE"); // IDLE, ASKING_CONSENT, CONNECTED
+  const [callStatus, setCallStatus] = useState("IDLE"); 
   const [netravaMonitor, setNetravaMonitor] = useState(true);
   const [callTranscript, setCallTranscript] = useState([]);
   const [callAnalysis, setCallAnalysis] = useState(null);
@@ -123,11 +123,11 @@ export default function CommGuard({ addLog, addAlert }) {
   const [micActive, setMicActive] = useState(false);
   const [waveHeights, setWaveHeights] = useState([20, 40, 15, 30, 50, 25, 45, 10]);
 
-  // Speech Recognition Ref
+  
   const recognitionRef = useRef(null);
   const scenarioTimerRef = useRef(null);
 
-  // Animate Voice Waveform when connected
+  
   useEffect(() => {
     let interval;
     if (callStatus === "CONNECTED") {
@@ -138,7 +138,7 @@ export default function CommGuard({ addLog, addAlert }) {
     return () => clearInterval(interval);
   }, [callStatus]);
 
-  // Clean up timers on unmount & request notification permissions
+  
   useEffect(() => {
     if (window.Notification && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -151,7 +151,7 @@ export default function CommGuard({ addLog, addAlert }) {
     };
   }, []);
 
-  // SMS Scanning Routine
+  
   const scanSMS = async (textToScan) => {
     const text = textToScan || smsInput;
     if (!text) return;
@@ -189,7 +189,7 @@ export default function CommGuard({ addLog, addAlert }) {
     }
   };
 
-  // Email Phishing Scan
+  
   const scanEmail = async () => {
     if (!emailBody) return;
     setEmailLoading(true);
@@ -236,14 +236,14 @@ export default function CommGuard({ addLog, addAlert }) {
     setEmailBody(tpl.content);
   };
 
-  // Huddle / VoIP Call Management
+  
   const selectChannelAndPrompt = (chanName) => {
-    // Request notification permission if needed
+    
     if (window.Notification && Notification.permission === 'default') {
       Notification.requestPermission();
     }
 
-    // Native OS-level blocking confirmation pop-up
+    
     const agree = window.confirm(
       `Netrava Shield Protocol\n\nChannel: #${chanName}\n\nShould Netrava hear this call to check if the caller is scamming?`
     );
@@ -254,7 +254,7 @@ export default function CommGuard({ addLog, addAlert }) {
     setCallTranscript([]);
     setCallAnalysis(null);
 
-    // Native Desktop Notification pop-up
+    
     if (window.Notification && Notification.permission === 'granted') {
       try {
         const title = agree ? "Netrava Call Guard ACTIVE" : "Private Call Session";
@@ -293,7 +293,7 @@ export default function CommGuard({ addLog, addAlert }) {
     addLog('HUDDLE_CALL', 'Left huddle voice channel.', 'info');
   };
 
-  // Analyze Accumulative Speech Text
+  
   const analyzeCallTranscript = async (text) => {
     try {
       const res = await fetch('/api/scamcall/transcribe', {
@@ -310,7 +310,7 @@ export default function CommGuard({ addLog, addAlert }) {
         }
       }
     } catch (err) {
-      // Local fallback rules if backend offline
+      
       const lowercase = text.toLowerCase();
       const hasOTP = lowercase.includes("otp") || lowercase.includes("code") || lowercase.includes("pin");
       const hasUrgency = lowercase.includes("immediately") || lowercase.includes("block") || lowercase.includes("police") || lowercase.includes("anydesk");
@@ -325,7 +325,7 @@ export default function CommGuard({ addLog, addAlert }) {
     }
   };
 
-  // Simulate injecting a caller speech scenario line by line
+  
   const injectScenario = (scenarioIdx) => {
     if (scenarioTimerRef.current) clearTimeout(scenarioTimerRef.current);
     setCallTranscript([]);
@@ -339,7 +339,7 @@ export default function CommGuard({ addLog, addAlert }) {
         const lineText = lines[idx];
         setCallTranscript(prev => [...prev, { speaker: "Caller", text: lineText }]);
         
-        // Accumulate text for scanner
+        
         const accumulated = lines.slice(0, idx + 1).join(" ");
         if (netravaMonitor) {
           analyzeCallTranscript(accumulated);
@@ -354,7 +354,7 @@ export default function CommGuard({ addLog, addAlert }) {
     pushLine();
   };
 
-  // Automatically start call protection if redirected from background process auditor
+  
   useEffect(() => {
     const autoStart = sessionStorage.getItem("autoStartCall");
     const autoChan = sessionStorage.getItem("autoStartChannel") || "External-VoIP-Line";
@@ -372,13 +372,13 @@ export default function CommGuard({ addLog, addAlert }) {
       addLog('HUDDLE_CALL', `Automatically attached to active call process (${autoChan}). Privacy guard: ${agree ? 'ENABLED (Auditing Speech)' : 'DISABLED (Bypassed)'}`, agree ? 'info' : 'warning');
       
       if (agree) {
-        // Automatically start injecting the Mumbai Police Digital Arrest scam scenario!
+        
         injectScenario(0);
       }
     }
   }, []);
 
-  // Keyboard manual speech input
+  
   const handleManualSpeechSubmit = (e) => {
     e.preventDefault();
     if (!customSpeechText.trim()) return;
@@ -395,7 +395,7 @@ export default function CommGuard({ addLog, addAlert }) {
     setCustomSpeechText("");
   };
 
-  // Speech Recognition Mic Hook
+  
   const startMicListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -452,7 +452,7 @@ export default function CommGuard({ addLog, addAlert }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       
-      {/* 1. SMS / WhatsApp Scan Detection */}
+      {}
       <div className="grid-2col">
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -496,7 +496,7 @@ export default function CommGuard({ addLog, addAlert }) {
           </button>
         </div>
 
-        {/* SMS Result Panel */}
+        {}
         <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           {!smsResult ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -536,7 +536,7 @@ export default function CommGuard({ addLog, addAlert }) {
         </div>
       </div>
 
-      {/* 2. Discord & Huddle Voice Workspace */}
+      {}
       <div className="glass-panel" style={{ padding: '1.5rem' }}>
         <h3 style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
           <Volume2 size={18} color="var(--primary-neon)" /> Huddle Voice Workspace & Live Call Guard
@@ -609,10 +609,10 @@ export default function CommGuard({ addLog, addAlert }) {
         {callStatus === "CONNECTED" && (
           <div className="grid-2col" style={{ alignItems: 'stretch' }}>
             
-            {/* Left side: Huddle status & visualizer */}
+            {}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
-              {/* Channel metadata */}
+              {}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <h4 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Huddle Connected</h4>
@@ -623,7 +623,7 @@ export default function CommGuard({ addLog, addAlert }) {
                 </button>
               </div>
 
-              {/* Speaker card list */}
+              {}
               <div className="glass-panel" style={{ padding: '1rem', display: 'flex', gap: '1rem', justifyContent: 'space-around', alignItems: 'center' }}>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--accent-violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, border: '2px solid var(--accent-violet)', margin: '0 auto 0.25rem' }}>
@@ -649,7 +649,7 @@ export default function CommGuard({ addLog, addAlert }) {
                 </div>
               </div>
 
-              {/* Status banner and wave visualizer */}
+              {}
               <div className="glass-panel" style={{ padding: '1rem', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {netravaMonitor ? (
                   <div style={{ fontSize: '0.85rem', color: 'var(--threat-low)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', fontWeight: 600 }}>
@@ -661,7 +661,7 @@ export default function CommGuard({ addLog, addAlert }) {
                   </div>
                 )}
 
-                {/* Animated wave bars */}
+                {}
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.3rem', height: '60px' }}>
                   {waveHeights.map((h, i) => (
                     <div 
@@ -678,7 +678,7 @@ export default function CommGuard({ addLog, addAlert }) {
                 </div>
               </div>
 
-              {/* Voice alerts card */}
+              {}
               {netravaMonitor && callAnalysis && callAnalysis.risk_level !== 'LOW' && (
                 <div className="glass-panel" style={{ padding: '1rem', borderLeft: '4px solid var(--threat-high)', background: 'rgba(225, 29, 72, 0.03)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--threat-high)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.25rem' }}>
@@ -692,7 +692,7 @@ export default function CommGuard({ addLog, addAlert }) {
               )}
             </div>
 
-            {/* Right side: Speech inputs & transcript */}
+            {}
             <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', background: 'rgba(0,0,0,0.03)', minHeight: '320px' }}>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
@@ -700,7 +700,7 @@ export default function CommGuard({ addLog, addAlert }) {
                 <span className="badge info" style={{ fontSize: '0.65rem' }}>Whisper AI</span>
               </div>
 
-              {/* Transcript feed */}
+              {}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto', maxHeight: '180px', marginBottom: '1rem', paddingRight: '4px' }}>
                 {callTranscript.length === 0 ? (
                   <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
@@ -718,11 +718,11 @@ export default function CommGuard({ addLog, addAlert }) {
                 )}
               </div>
 
-              {/* Inputs section */}
+              {}
               {netravaMonitor ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   
-                  {/* Mic and scenario row */}
+                  {}
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {micActive ? (
                       <button onClick={stopMicListening} className="cyber-button" style={{ background: 'var(--threat-high)', color: '#fff', flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}>
@@ -752,7 +752,7 @@ export default function CommGuard({ addLog, addAlert }) {
                     </select>
                   </div>
 
-                  {/* Manual speech keyboard input */}
+                  {}
                   <form onSubmit={handleManualSpeechSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
                     <input
                       type="text"
@@ -779,7 +779,7 @@ export default function CommGuard({ addLog, addAlert }) {
         )}
       </div>
 
-      {/* 3. Email Phishing Detector */}
+      {}
       <div className="grid-2col">
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -841,7 +841,7 @@ export default function CommGuard({ addLog, addAlert }) {
           </button>
         </div>
 
-        {/* Email Result Panel */}
+        {}
         <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           {!emailResult ? (
             <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
