@@ -354,6 +354,30 @@ export default function CommGuard({ addLog, addAlert }) {
     pushLine();
   };
 
+  // Automatically start call protection if redirected from background process auditor
+  useEffect(() => {
+    const autoStart = sessionStorage.getItem("autoStartCall");
+    const autoChan = sessionStorage.getItem("autoStartChannel") || "External-VoIP-Line";
+    if (autoStart !== null) {
+      sessionStorage.removeItem("autoStartCall");
+      sessionStorage.removeItem("autoStartChannel");
+      
+      const agree = autoStart === "true";
+      setSelectedChannel(autoChan);
+      setNetravaMonitor(agree);
+      setCallStatus("CONNECTED");
+      setCallTranscript([]);
+      setCallAnalysis(null);
+      
+      addLog('HUDDLE_CALL', `Automatically attached to active call process (${autoChan}). Privacy guard: ${agree ? 'ENABLED (Auditing Speech)' : 'DISABLED (Bypassed)'}`, agree ? 'info' : 'warning');
+      
+      if (agree) {
+        // Automatically start injecting the Mumbai Police Digital Arrest scam scenario!
+        injectScenario(0);
+      }
+    }
+  }, []);
+
   // Keyboard manual speech input
   const handleManualSpeechSubmit = (e) => {
     e.preventDefault();

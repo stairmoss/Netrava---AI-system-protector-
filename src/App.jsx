@@ -63,7 +63,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Background Process Sentinel Hunter
+  // Background Process Sentinel Hunter & Call Detector
   useEffect(() => {
     if (!backendOnline) return;
 
@@ -74,11 +74,42 @@ export default function App() {
           const data = await res.json();
           const procList = data.processes || [];
           for (const proc of procList) {
+            // Check for call-related processes
+            const nameLower = proc.name.toLowerCase();
+            const isCall = nameLower.includes("discord") || 
+                           nameLower.includes("zoom") || 
+                           nameLower.includes("teams") || 
+                           nameLower.includes("skype") || 
+                           nameLower.includes("slack") || 
+                           nameLower.includes("webex") || 
+                           nameLower.includes("huddle");
+
+            if (isCall && !promptedPids.current.has(proc.pid) && !sessionStorage.getItem("autoStartCallPrompted")) {
+              promptedPids.current.add(proc.pid);
+              sessionStorage.setItem("autoStartCallPrompted", "true");
+              
+              const agree = window.confirm(
+                `[NETRAVA CALL SHIELD]\n\nActive call session detected:\nProcess: ${proc.name} (PID: ${proc.pid})\n\nShould Netrava listen to this call session to identify real-time scam and fraud patterns?`
+              );
+              
+              if (agree) {
+                sessionStorage.setItem("autoStartCall", "true");
+                sessionStorage.setItem("autoStartChannel", proc.name);
+                setActiveTab('comm');
+                addLog('HUDDLE_CALL', `Automatically attached to active call process (${proc.name}). Privacy guard: ENABLED`, 'info');
+              } else {
+                sessionStorage.setItem("autoStartCall", "false");
+                sessionStorage.setItem("autoStartChannel", proc.name);
+                addLog('HUDDLE_CALL', `User bypassed automatic protection for call process: ${proc.name}`, 'warning');
+              }
+              break;
+            }
+
             // Condition: Process has high CPU (> 75%) or matches suspicious names
             const isSuspicious = proc.cpu > 75.0 || 
-                                proc.name.includes("miner") || 
-                                proc.name.includes("trojan") || 
-                                proc.name.includes("malicious");
+                                nameLower.includes("miner") || 
+                                nameLower.includes("trojan") || 
+                                nameLower.includes("malicious");
             
             if (isSuspicious && !promptedPids.current.has(proc.pid)) {
               promptedPids.current.add(proc.pid);
@@ -117,6 +148,31 @@ export default function App() {
     const interval = setInterval(auditSystemProcesses, 5000);
     return () => clearInterval(interval);
   }, [backendOnline]);
+
+  // Simulated VoIP call simulation for testing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (sessionStorage.getItem("autoStartCallPrompted")) return;
+      sessionStorage.setItem("autoStartCallPrompted", "true");
+      
+      const agree = window.confirm(
+        `[NETRAVA CALL SHIELD]\n\nSimulated incoming VoIP call session detected (Process: discord.exe).\n\nShould Netrava listen to this call session to identify real-time scam and fraud patterns?`
+      );
+      
+      if (agree) {
+        sessionStorage.setItem("autoStartCall", "true");
+        sessionStorage.setItem("autoStartChannel", "discord.exe");
+        setActiveTab('comm');
+        addLog('HUDDLE_CALL', `Automatically attached to active call process (discord.exe). Privacy guard: ENABLED`, 'info');
+      } else {
+        sessionStorage.setItem("autoStartCall", "false");
+        sessionStorage.setItem("autoStartChannel", "discord.exe");
+        addLog('HUDDLE_CALL', `User bypassed automatic protection for call process: discord.exe`, 'warning');
+      }
+    }, 15000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const addLog = (service, msg, type = 'info') => {
     const time = new Date().toTimeString().split(' ')[0];
